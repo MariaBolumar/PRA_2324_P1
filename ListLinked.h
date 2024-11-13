@@ -9,138 +9,151 @@
 using namespace std;
 
 template <typename T>
-
 class ListLinked : public List<T> {
-	private:
-    		Node<T>* first;
-    		int n;
+private:
+    Node<T>* first;  // Puntero hacia el primer nodo de la list
+    int n;          // Número de elementos de la list
 
-	public:
-    		ListLinked() : first(nullptr), n(0) {}
+public:
+    // Constructor
+    ListLinked() : first(nullptr), n(0) {}
 
-  		~ListLinked() {
-        		Node<T>* aux = first;
-        		while (aux != nullptr) {
-            			Node<T>* toDelete = aux;
-            			aux = aux->next;
-            			delete toDelete;
-        		}
-    		}
+    // Destructor
+    ~ListLinked() {
+        Node<T>* aux = first;
+        while (aux != nullptr) {
+            Node<T>* toDelete = aux;
+            aux = aux->next;
+            delete toDelete;
+        }
+    }
 
-    		T operator[](int pos) {
-        		if (pos < 0 || pos >= n) {
-            			throw out_of_range("Índice fuera de rango");
-        		}
-			Node<T>* current = first;
-        		for (int i = 0; i < pos; ++i) {
-            			current = current->next;
-        		}
+    // Sobrecarga del operador []
+    T operator[](int pos) {
+        if (pos < 0 || pos >= n) {
+            throw out_of_range("Posición inválida");
+        }
 
-        		return current->data;
-    		}
+        Node<T>* current = first;
+        for (int i = 0; i < pos; ++i) {
+            current = current->next;
+        }
 
-    		friend ostream& operator<<(ostream &out, const ListLinked<T> &list) {
-        		Node<T>* current = list.first;
-        		out << "[";
-			while (current != nullptr) {
-            			out << current->data;
-            			if (current->next != nullptr) {
-                			out << ", ";
-            			}
-            			current = current->next;
-        		}
-			out << "]";
-        		
-			return out;
-   		}
+        return current->data;
+    }
 
-    		void insert(int pos, T e) override {
-        		if (pos < 0 || pos > n) {
-            			throw out_of_range("Índice fuera de rango");
-        		}
-			Node<T>* newNode = new Node<T>(e);
-        		if (pos == 0) {
-            			newNode->next = first;
-            			first = newNode;
-        		} 
-        		else {
-            			Node<T>* current = first;
-            			for (int i = 0; i < pos - 1; ++i) {
-                			current = current->next;
-            			}
-            			newNode->next = current->next;
-            			current->next = newNode;
-        		}
-        		n++;
-    		}
+    // Sobrecarga del operador <<
+    friend ostream& operator<<(ostream &out, const ListLinked<T> &list) {
+        Node<T>* current = list.first;
+        out << "[";
 
-    		void append(T e) override {
-        		Node<T>* newNode = new Node<T>(e);
-        		if (first == nullptr) {
-            			first = newNode;
-        		} else {
-            			Node<T>* current = first;
-            			while (current->next != nullptr) {
-                			current = current->next;
-            			}
-            			current->next = newNode;
-        		}
-        		n++;
-    		}
+        while (current != nullptr) {
+            out << current->data;
+            if (current->next != nullptr) {
+                out << ", ";
+            }
+            current = current->next;
+        }
 
-		void prepend(T e) override {
-        		Node<T>* newNode = new Node<T>(e);
-        		newNode->next = first;
-        		first = newNode;
-        		n++;
-    		}
+        out << "]";
+        return out;
+    }
 
-    		T remove(int pos) override {
-        		if (pos < 0 || pos >= n) {
-            			throw out_of_range("Posición inválida!");
-        		}
-			Node<T>* toDelete;
-        		if (pos == 0) {
-            			toDelete = first;
-            			first = first->next;
-        		} else {
-            			Node<T>* current = first;
-            			for (int i = 0; i < pos - 1; ++i) {
-                			current = current->next;
-				}
-            			toDelete = current->next;
-            			current->next = toDelete->next;
-     			}
-			T data = toDelete->data;
-        		delete toDelete;
-        		n--;
-        		
-			return data;
-    		}
+    // Implementa los métodos de la interfaz List<T>
+    void insert(int pos, T e) override {
+        if (pos < 0 || pos > n) {
+            throw out_of_range("Posición inválida");
+        }
 
-    		T get(int pos) override {
-        		return operator[](pos);
-    		}
+        Node<T>* newNode = new Node<T>(e);
+        if (pos == 0) {
+            newNode->next = first;
+            first = newNode;
+        } 
+        
+        else {
+            Node<T>* current = first;
+            for (int i = 0; i < pos - 1; ++i) {
+                current = current->next;
+            }
+            newNode->next = current->next;
+            current->next = newNode;
+        }
+        n++;
+    }
 
-    		int search(T e) override {
-        		Node<T>* current = first;
-        		for (int i = 0; i < n; ++i) {
-            			if (current->data == e) {
-                			return i;
-            			}
-            			current = current->next;
-        		}
+    void append(T e) override {
+        Node<T>* newNode = new Node<T>(e);
+        if (first == nullptr) {
+            first = newNode;
+        } 
+        
+        else {
+            Node<T>* current = first;
+            while (current->next != nullptr) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+        n++;
+    }
 
-        		return -1;
-    		}
+    void prepend(T e) override {
+        Node<T>* newNode = new Node<T>(e);
+        newNode->next = first;
+        first = newNode;
+        n++;
+    }
 
-    		bool empty() override {
-        		return n == 0;
-    		}
+    T remove(int pos) override {
+        if (pos < 0 || pos >= n) {
+            throw out_of_range("Posición inválida!");
+        }
 
-    		int size() override { 
-        		return n;
-    		}
+        Node<T>* toDelete;
+        if (pos == 0) {
+            toDelete = first;
+            first = first->next;
+        } 
+        
+        else {
+            Node<T>* current = first;
+            for (int i = 0; i < pos - 1; ++i) {
+                current = current->next;
+            }
+            toDelete = current->next;
+            current->next = toDelete->next;
+        }
+
+        T data = toDelete->data;
+        delete toDelete;
+        n--;
+        return data;
+    }
+
+    T get(int pos) override {
+        return operator[](pos);
+    }
+
+    int search(T e) override {
+        Node<T>* current = first;
+        for (int i = 0; i < n; ++i) {
+            if (current->data == e) {
+                return i;
+            }
+            current = current->next;
+        }
+
+        return -1;
+    }
+
+    bool empty() override {
+        return n == 0;
+    }
+
+    int size() override { 
+        return n;
+    }
 };
 
 #endif // LISTLINKED_H
