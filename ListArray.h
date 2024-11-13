@@ -98,7 +98,7 @@ class ListArray : public List<T> {
 
     		T operator[](int pos) {
         		if (pos < 0 || pos >= n) {
-            			throw out_of_range("Posición fuera de rango");
+            			throw out_of_range("Posición inválida!");
         		}
 
         		return arr[pos];
